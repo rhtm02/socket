@@ -40,7 +40,8 @@ class SocketServer:
             print("RECEIVE DATA : " + str(data))
         else:
             print("NOT RECEIVE DATA")
-    
-            
         
 
+if __name__ == "__main__":
+    print("THIS MODULE IS NOT STANDALONE")
+    print("JUST SERVER")

@@ -7,3 +7,13 @@ class SocketClient:
         pass
 
     
+
+
+
+if __name__ == "__main__":
+    print("THIS MODULE IS NOT STANDALONE")
+    print("JUST CLIENT")
+
+
+
+

@@ -8,7 +8,7 @@ class SocketServer:
     def __init__(self, host = '', port = 10000):
 
         self.HOST = host
-        self.PORT = 10000
+        self.PORT = port
         self.BUFSIZE = 1024
         self.ADDR = (HOST, PORT)
         #server socket init
@@ -29,18 +29,25 @@ class SocketServer:
             print("ACEEPT")
             print("CLIENT INFOMATION : " + str(self.ClientSocket))
             print("CONNECTION SUCCESS")
+            return 1
         else:
             print("CONNECTION FAIL")
+            return 0
 
+        return 0
     def LoadData(self):
 
         data = self.ClientSocket.recev(65535)
 
         if (data):
-            print("RECEIVE DATA : " + str(data))
+            print("RECEIVE DATA : " + str(data.decode()))
+            return 1
         else:
             print("NOT RECEIVE DATA")
-        
+            return 0
+
+        return 0
+    
 
 if __name__ == "__main__":
     print("THIS MODULE IS NOT STANDALONE")

@@ -40,7 +40,7 @@ if __name__ == "__main__":
     Client = SocketClient(host = "127.0.0.1", port = 2222)
     Client.Connection()
     while(1):
-        msg = input('type your message(EXIT q) : ')
+        msg = str(raw_input('type your message(EXIT q) : '))
         if (msg == 'q'):
             break
         Client.SendMessage(msg)

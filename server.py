@@ -9,6 +9,7 @@ class SocketServer:
 
         self.REQUEST_LIST = ['todo','TODO','ToDo','Todo','cal','Cal','CAL']
         self.TODO_STACK = []
+        self.OPERATOR = ["*","/","+","-"]
 
         self.HOST = host
         self.PORT = port
@@ -44,14 +45,62 @@ class SocketServer:
             output += i
         return output
 
-    def Calculating(self, msg):
+    def Postfix(self, string):
+        numStack = []
+        operatorStack = []
+        outputStack = []
+        for i in range(len(string)):
+            if (string[i] == '('):
+                i += 1
+                while(string[i] != ')'):
+                    temp = ""
+                    if ((ord(string[i]) >= 48) and (ord(string[i]) <= 57)):
+                        temp += string[i]
+                    else:
+                        numStack.append(temp)
+                        operatorStack.append(string[i])
+                    i += 1
+                outputStack = numStack
+                while(len(operatorStack) != 0):
+                    outputStack.append(operatorStack.pop())
+            else:
+                pass
+        return outputStack
+
+
+    def Calculating(self, string):
         #add code for prefix calculating  
-            
+        postfixString = self.Postfix(string)
+        numStack = []
+        #for debug postfix
+        print("prefix : " + str(postfixString))
+        for i in postfixString:
+            if (i not in self.OPERATOR):
+                numStack.append(i)
+            else:
+                if (i == "*"):
+                    temp = float(numStack.pop()) * float(numStack.pop())
+                    numStack.append(temp)
+                elif (i == "/"):
+                    temp = float(numStack.pop()) / float(numStack.pop())
+                    numStack.append(temp)
+                elif (i == "+"):
+                    temp = float(numStack.pop()) * float(numStack.pop())
+                    numStack.append(temp)
+                elif (i == "-"):
+                    temp = float(numStack.pop()) * float(numStack.pop())
+                    numStack.append(temp)
+        if (len(numStack) != 1):
+            print("RESULT STACK LEN IS NOT 1")
+            return "ERROR"
+        result = numStack.pop()
+        return result
 
     def LoadData(self):
 
         data = self.ClientSocket.recv(65535)
-        data = self.ParsingMsg(str(data))
+        print(data)
+        #data = self.ParsingMsg(str(data))
         #ADD code for server's service
         if (str(data) in self.REQUEST_LIST):
             if (data in self.REQUEST_LIST[0:3]):
@@ -67,10 +116,14 @@ class SocketServer:
             else:
                 print("CALCULATE SECTION")
                 while(1):
-                    #add code prefix method for calculating
+                    #add code postfix method for calculating
 
                     data = self.ClientSocket.recv(65535)
-                    data = self.ParsingMsg(data)
+                    #data = self.ParsingMsg(data)
+                    result = self.Calculating(data)
+                    if (result == "ERROR"):
+                        print("ERROR CALCULATING")
+                    print("Calculating Result : " + str(result))
             if (len(self.TODO_STACK) != 0):
                 print("STACK : " + str(self.TODO_STACK))
             else:
@@ -81,7 +134,7 @@ class SocketServer:
 
         else:
             print("Command not supported")
-            
+            pass
         '''
         for debug connection 
         if (data):

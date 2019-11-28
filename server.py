@@ -44,28 +44,40 @@ class SocketServer:
         for i in lst[1:]:
             output += i
         return output
+    def precedence(self, op):
+        if op == '(':
+            return 0
+        elif op == '+' or op == '-':
+            return 1
+        elif op == '*' or op == '/':
+            return 2
+        else:
+            return 3
 
-    def Postfix(self, string):
-        numStack = []
-        operatorStack = []
-        outputStack = []
-        for i in range(len(string)):
-            if (string[i] == '('):
-                i += 1
-                while(string[i] != ')'):
-                    temp = ""
-                    if ((ord(string[i]) >= 48) and (ord(string[i]) <= 57)):
-                        temp += string[i]
-                    else:
-                        numStack.append(temp)
-                        operatorStack.append(string[i])
-                    i += 1
-                outputStack = numStack
-                while(len(operatorStack) != 0):
-                    outputStack.append(operatorStack.pop())
-            else:
-                pass
-        return outputStack
+    def Postfix(self, source):
+        dst = []
+        stack = []
+        for i in source:
+            if i == '(':
+                stack.append(i)
+            elif i == ')':
+                while stack[-1] != '(':
+                    t = stack.pop()
+                    dst.append(t)
+                stack.pop()
+            elif (i in self.OPERATOR):
+                while len(stack) != 0 and self.precedence(stack[-1]) >= self.precedence(i):
+                    dst.append(stack.pop())
+                stack.append(i)
+            elif '0' <= i <= '9':
+
+                dst.append(i)
+
+        while len(stack) != 0:
+            t = stack.pop()
+            dst.append(t)
+
+        return(dst)
 
 
     def Calculating(self, string):
@@ -82,13 +94,14 @@ class SocketServer:
                     temp = float(numStack.pop()) * float(numStack.pop())
                     numStack.append(temp)
                 elif (i == "/"):
-                    temp = float(numStack.pop()) / float(numStack.pop())
-                    numStack.append(temp)
+                    temp1 = float(numStack.pop()) 
+                    temp2 = float(numStack.pop())
+                    numStack.append(temp2 / temp1)
                 elif (i == "+"):
-                    temp = float(numStack.pop()) * float(numStack.pop())
+                    temp = float(numStack.pop()) + float(numStack.pop())
                     numStack.append(temp)
                 elif (i == "-"):
-                    temp = float(numStack.pop()) * float(numStack.pop())
+                    temp = float(numStack.pop()) - float(numStack.pop())
                     numStack.append(temp)
         if (len(numStack) != 1):
             print("RESULT STACK LEN IS NOT 1")
@@ -105,13 +118,14 @@ class SocketServer:
         if (str(data) in self.REQUEST_LIST):
             if (data in self.REQUEST_LIST[0:3]):
                 #self.TODO_STACK.append()
-                print("IN STACK(type q for EXIT)")
+                print("IN STACK(type end for EXIT)")
                 while(1):
                     data = self.ClientSocket.recv(65535)
-                    data = self.ParsingMsg(str(data))
-                    if(data == 'q'):
+                    #data = self.ParsingMsg(str(data))
+                    if(data == 'end'):
                         break
                     self.TODO_STACK.append(data)
+                    print("TODO LIST : " + str(self.TODO_STACK))
                     print("STACK DATA")
             else:
                 print("CALCULATE SECTION")
